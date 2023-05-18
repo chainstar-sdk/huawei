@@ -44,3 +44,20 @@ module "redis" {
   subnet_ids = module.vpc.subnet_ids
   availability_zones = data.huaweicloud_availability_zones.this.names
 }
+
+# module "security-groups" {
+#   source = "./modules/security-groups"
+#   vpc_cidr = output.vpc_cidr
+# }
+
+# module "node-pool-sg" {
+#   source = "./modules/node-pool-sg"
+# }
+
+# module "cce" {
+#   source = "./modules/cce-cluster"
+#   vpc_id = module.vpc.vpc_id
+#   private_subnets = module.vpc.subnet_ids
+#   pri_sg_id = module.security-groups.security_group_id
+#   node_pool_one_sg_id = module.node-pool-sg.node_pool_sg_id
+# }

@@ -1,9 +1,5 @@
 data "huaweicloud_availability_zones" "available" {}
 
-# module "vpc" {
-#   source = "../vpc"
-# }
-
 resource "huaweicloud_vpc_subnet" "az1-hasync" {
   vpc_id      = var.vpc_id
   name        = "NB-Production-ap-northeast-1a-hasync"
