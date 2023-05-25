@@ -1,51 +1,51 @@
 locals {
-  vpc_name       = "NB-Production-vpc"
-  vpc_cidr_block = "10.10.0.0/16"
+  resource        = yamldecode(file("${path.cwd}/config.yaml")).configs.resources.vpc
+  private_subnets = [
+    for k, v in local.resource.private_subnets : {
+      name = k,
+      cidr = v
+    }
+  ]
+  
+  public_subnets = [
+    for k, v in local.resource.public_subnets : {
+      name = k,
+      cidr = v
+    }
+  ]
+
+  database_subnets = [
+    for k, v in local.resource.database_subnets : {
+      name = k,
+      cidr = v
+    }
+  ]
+  
+  nat_subway = [
+    for k, v in local.resource.nat_subway : {
+      name = k,
+      cidr = v
+    }
+  ]
+
+  subnets_configuration = concat(
+    local.private_subnets,
+    local.public_subnets,
+    local.database_subnets,
+    local.nat_subway
+  )
 }
 
 module "vpc" {
-  source         = "git::https://github.com/terraform-huaweicloud-modules/terraform-huaweicloud-vpc.git"
-  vpc_name       = local.vpc_name
-  vpc_cidr_block = local.vpc_cidr_block
-
-  subnets_configuration = [
-      // Subnets with private only access for server clusters in each AZ
-    {name="private-az1-1", cidr="10.10.0.0/24"},
-    {name="private-az2-1", cidr="10.10.1.0/24"},
-    {name="private-az3-1", cidr="10.10.2.0/24"},
-    {name="private-az4-1", cidr="10.10.3.0/24"},
-    {name="private-az1-2", cidr="10.10.4.0/24"},
-    {name="private-az2-2", cidr="10.10.5.0/24"},
-    {name="private-az3-2", cidr="10.10.6.0/24"},
-    {name="private-az4-2", cidr="10.10.7.0/24"},
-
-    {name="private-az1-3", cidr="10.10.10.0/24"},
-    {name="private-az2-3", cidr="10.10.11.0/24"},
-    {name="private-az3-3", cidr="10.10.12.0/24"},
-    {name="private-az4-3", cidr="10.10.13.0/24"},
-  
-      // Subnets with public NAT gateway access for server clusters in each AZ
-    {name="public-az1", cidr="10.10.20.0/24"},
-    {name="public-az2", cidr="10.10.21.0/24"},
-    {name="public-az3", cidr="10.10.22.0/24"},
-    {name="public-az4", cidr="10.10.23.0/24"},
-  
-      // Subnets for database clusters in each AZ
-    {name="database-az1", cidr="10.10.100.0/24"},
-    {name="database-az2", cidr="10.10.101.0/24"},
-    {name="database-az3", cidr="10.10.102.0/24"},
-    {name="database-az3", cidr="10.10.103.0/24"},
-    
-
-      // Additional subnets for NAT gateways
-    {name="public-nat-default", cidr="10.10.200.0/24"},
-    {name="private-nat-default", cidr="10.10.201.0/24"}
-  ]
-  
+  # source                 = "git::https://github.com/terraform-huaweicloud-modules/terraform-huaweicloud-vpc.git"
+  source                   = "../../huaweicloud/terraform-huaweicloud-vpc"
+  vpc_name                 = local.resource.vpc_name
+  vpc_cidr_block           = local.resource.cidr_block
+  subnets_configuration    = local.subnets_configuration
   is_security_group_create = false
 }
 
-  /**
+/**
   For the missing supported flags,
 
   - enable_nat_gateway = true
@@ -55,8 +55,8 @@ module "vpc" {
 
   For public subnets,
 
-    - https: //github.com/huaweicloud/terraform-provider-huaweicloud/blob/master/docs/resources/nat_gateway.md
-    - https: //github.com/huaweicloud/terraform-provider-huaweicloud/blob/master/docs/resources/nat_snat_rule.md
+    - https:   //github.com/huaweicloud/terraform-provider-huaweicloud/blob/master/docs/resources/nat_gateway.md
+    - https:   //github.com/huaweicloud/terraform-provider-huaweicloud/blob/master/docs/resources/nat_snat_rule.md
 
     1. Create an extra default subnet for the gateway in the same VPC.
     2. Create the public NAT gateway and assign the default subnet to it with the same VPC.
@@ -77,8 +77,8 @@ module "vpc" {
 
   To do so, create a DNS private zone.
 
-    - https: //github.com/huaweicloud/terraform-provider-huaweicloud/blob/master/docs/resources/dns_zone.md
-    - https: //github.com/huaweicloud/terraform-provider-huaweicloud/blob/master/docs/resources/dns_recordset.md
+    - https:   //github.com/huaweicloud/terraform-provider-huaweicloud/blob/master/docs/resources/dns_zone.md
+    - https:   //github.com/huaweicloud/terraform-provider-huaweicloud/blob/master/docs/resources/dns_recordset.md
 
     1. Create the private DNS zone and assign to the VPC.
     2. Create the DNS records to tie to the relevant IP addresses.

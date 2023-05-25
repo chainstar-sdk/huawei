@@ -1,9 +1,5 @@
-variable "secret_key" {
-  default = "WUKINV9DDQCPUCOFTA7I"
-}
-variable "access_key" {
-  default = "6kibtiZafVcEqEBV0SLop0UU4y2TC7xnvyE6EfVb"
-}
+variable "secret_key" {}
+variable "access_key" {}
 
 terraform {
   required_providers {
@@ -36,18 +32,18 @@ module "vpc" {
   source = "./modules/vpc"
 }
 
-module "subnet" {
-  source = "./modules/subnet"
-  vpc_id = module.vpc.vpc_id
-  subnet_ids = module.vpc.subnet_ids
-}
+# module "subnet" {
+#   source = "./modules/subnet"
+#   vpc_id = module.vpc.vpc_id
+#   subnet_ids = module.vpc.subnet_ids
+# }
 
-module "redis" {
-  source = "./modules/redis"
-  vpc_id = module.vpc.vpc_id
-  subnet_ids = module.vpc.subnet_ids
-  availability_zones = data.huaweicloud_availability_zones.this.names
-}
+# module "redis" {
+#   source = "./modules/redis"
+#   vpc_id = module.vpc.vpc_id
+#   subnet_ids = module.vpc.subnet_ids
+#   availability_zones = data.huaweicloud_availability_zones.this.names
+# }
 
 # module "security-groups" {
 #   source = "./modules/security-groups"
