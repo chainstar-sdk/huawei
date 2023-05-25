@@ -1,5 +1,9 @@
-variable "secret_key" {}
-variable "access_key" {}
+variable "secret_key" {
+  default = "WUKINV9DDQCPUCOFTA7I"
+}
+variable "access_key" {
+  default = "6kibtiZafVcEqEBV0SLop0UU4y2TC7xnvyE6EfVb"
+}
 
 terraform {
   required_providers {

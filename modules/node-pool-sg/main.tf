@@ -10,5 +10,5 @@ resource "huaweicloud_networking_secgroup_rule" "node-pool-sg-r1" {
   protocol          = "tcp"
   port_range_min    = 22
   port_range_max    = 22
-  remote_ip_prefix  = "10.0.0.0/8"
+  remote_ip_prefix  = "10.10.0.0/8"
 }

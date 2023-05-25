@@ -1,4 +1,4 @@
 .terraform
 .terraform.lock.hcl
 start.sh
-
+get_all_outputs.sh

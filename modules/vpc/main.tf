@@ -1,6 +1,6 @@
 locals {
   vpc_name       = "NB-Production-vpc"
-  vpc_cidr_block = "10.0.0.0/16"
+  vpc_cidr_block = "10.10.0.0/16"
 }
 
 module "vpc" {
@@ -10,23 +10,36 @@ module "vpc" {
 
   subnets_configuration = [
       // Subnets with private only access for server clusters in each AZ
-    {name="private-az-1", cidr="10.0.0.0/24"},
-    {name="private-az-2", cidr="10.0.1.0/24"},
-    {name="private-az-3", cidr="10.0.2.0/24"},
+    {name="private-az1-1", cidr="10.10.0.0/24"},
+    {name="private-az2-1", cidr="10.10.1.0/24"},
+    {name="private-az3-1", cidr="10.10.2.0/24"},
+    {name="private-az4-1", cidr="10.10.3.0/24"},
+    {name="private-az1-2", cidr="10.10.4.0/24"},
+    {name="private-az2-2", cidr="10.10.5.0/24"},
+    {name="private-az3-2", cidr="10.10.6.0/24"},
+    {name="private-az4-2", cidr="10.10.7.0/24"},
+
+    {name="private-az1-3", cidr="10.10.10.0/24"},
+    {name="private-az2-3", cidr="10.10.11.0/24"},
+    {name="private-az3-3", cidr="10.10.12.0/24"},
+    {name="private-az4-3", cidr="10.10.13.0/24"},
   
       // Subnets with public NAT gateway access for server clusters in each AZ
-    {name="public-az-1", cidr="10.0.10.0/24"},
-    {name="public-az-2", cidr="10.0.11.0/24"},
-    {name="public-az-3", cidr="10.0.12.0/24"},
+    {name="public-az1", cidr="10.10.20.0/24"},
+    {name="public-az2", cidr="10.10.21.0/24"},
+    {name="public-az3", cidr="10.10.22.0/24"},
+    {name="public-az4", cidr="10.10.23.0/24"},
   
       // Subnets for database clusters in each AZ
-    {name="database-az-1", cidr="10.0.100.0/24"},
-    {name="database-az-2", cidr="10.0.101.0/24"},
-    {name="database-az-3", cidr="10.0.102.0/24"},
+    {name="database-az1", cidr="10.10.100.0/24"},
+    {name="database-az2", cidr="10.10.101.0/24"},
+    {name="database-az3", cidr="10.10.102.0/24"},
+    {name="database-az3", cidr="10.10.103.0/24"},
+    
 
       // Additional subnets for NAT gateways
-    {name="public-nat-default", cidr="10.0.200.0/24"},
-    {name="private-nat-default", cidr="10.0.201.0/24"}
+    {name="public-nat-default", cidr="10.10.200.0/24"},
+    {name="private-nat-default", cidr="10.10.201.0/24"}
   ]
   
   is_security_group_create = false
