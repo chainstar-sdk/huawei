@@ -24,7 +24,8 @@ resource "huaweicloud_vpc_subnet" "this" {
   description = lookup(element(var.subnets_configuration, count.index), "description")
   cidr        = lookup(element(var.subnets_configuration, count.index), "cidr")
   gateway_ip  = cidrhost(lookup(element(var.subnets_configuration, count.index), "cidr"), 1)
-  ipv6_enable = lookup(element(var.subnets_configuration, count.index), "ipv6_enabled")
+  # ipv6_enable = lookup(element(var.subnets_configuration, count.index), "ipv6_enabled")
+  ipv6_enable = false
   dhcp_enable = lookup(element(var.subnets_configuration, count.index), "dhcp_enabled")
   dns_list    = lookup(element(var.subnets_configuration, count.index), "dns_list")
 

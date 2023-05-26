@@ -9,3 +9,7 @@ output "vpc_id" {
 output "subnet_configs" {
   value = module.vpc.subnet_configs
 }
+
+# output flavors {
+#   value = module.gaussdb.flavors
+# }

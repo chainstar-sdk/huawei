@@ -32,6 +32,25 @@ module "vpc" {
   source = "./modules/vpc"
 }
 
+module "cce" {
+  source = "./modules/cce-cluster"
+  vpc_id = module.vpc.vpc_id
+  default_subnet_id = module.vpc.private_subnet_ids[0]
+  key_pair = "placeholder_text" # REMOVE THIS BEFORE DEPLOYMENT
+  availability_zone = data.huaweicloud_availability_zones.this.names[0]
+}
+
+module "default_security_group" {
+  source = "./modules/security-groups"
+}
+
+# module "gaussdb" {
+#   source = "./modules/tidb"
+#   vpc_id = module.vpc.vpc_id
+#   subnet_id = module.vpc.database_subnet_ids[0]
+#   secgroup_id = module.default_security_group.id
+# }
+
 # module "subnet" {
 #   source = "./modules/subnet"
 #   vpc_id = module.vpc.vpc_id
@@ -47,17 +66,10 @@ module "vpc" {
 
 # module "security-groups" {
 #   source = "./modules/security-groups"
-#   vpc_cidr = output.vpc_cidr
+  
 # }
 
 # module "node-pool-sg" {
 #   source = "./modules/node-pool-sg"
 # }
 
-# module "cce" {
-#   source = "./modules/cce-cluster"
-#   vpc_id = module.vpc.vpc_id
-#   private_subnets = module.vpc.subnet_ids
-#   pri_sg_id = module.security-groups.security_group_id
-#   node_pool_one_sg_id = module.node-pool-sg.node_pool_sg_id
-# }

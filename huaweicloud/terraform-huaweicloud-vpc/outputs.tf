@@ -5,7 +5,7 @@ output "vpc_id" {
 
 output "vpc_cidr" {
     description = "The CIDR block of the VPC resource"
-    value       = try(huaweicloud_vpc.this[0].id, "")
+    value       = try(huaweicloud_vpc.this[0].cidr, "")
 }
 
 output "subnet_cidrs" {
@@ -50,7 +50,7 @@ output "public_subnet_cidrs" {
 }
 
 output "database_subnet_ids" {
-  value = [for subnet in huaweicloud_vpc_subnet.this : subnet.id if length(regexall("database-az-.*", subnet.name)) > 0]
+  value = [for subnet in huaweicloud_vpc_subnet.this : subnet.id if length(regexall("database.*", subnet.name)) > 0]
 }
 
 output "public_nat_subnet_id" {
