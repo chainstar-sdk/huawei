@@ -4,8 +4,10 @@ data "huaweicloud_dcs_flavors" "single_flavors" {
 }
 
 resource "random_password" "password" {
-  length  = 16
-  special = true
+  length  = 25
+  min_numeric = 5
+  min_special = 5
+  min_upper = 5
 }
 
 resource "huaweicloud_dcs_instance" "this" {

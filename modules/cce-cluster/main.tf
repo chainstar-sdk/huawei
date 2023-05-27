@@ -9,7 +9,7 @@ resource "huaweicloud_vpc_subnet" "this" {
   vpc_id     = var.vpc_id
 }
 
-resource "huaweicloud_cce_cluster" "cce" {
+resource "huaweicloud_cce_cluster" "this" {
   name                   = "cluster"
   flavor_id              = "cce.s1.small"
   vpc_id                 = var.vpc_id

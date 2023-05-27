@@ -45,3 +45,41 @@ configs:
     cce_turbo_cluster:
       eni_subnet: "10.10.8.0/24"
       gateway_ip: "10.10.8.1"
+      node_pool:
+        name: "cce_node_pool"
+        os: "CentOS 8.2"
+        initial_node_count: 40
+        flavor_id: "s3.2xlarge.2"
+        min_node_count: 3
+        max_node_count: 100
+        scall_enable: true
+        scale_down_cooldown_time: 100
+        priority: 1
+        type: "vm"
+
+        root_volume:
+          size: 100
+          volume_type: "SAS"
+
+        data_volume:
+          size: 100
+          volume_type: "SAS"
+    
+    gaussdb:
+      master_availability_zone: "ap-southeast-3a"
+      availability_zone_mode: "multi"
+
+    dds:
+      mode: 'ReplicaSet'
+      datastore:
+        type: "DDS-Community"
+        version: "3.4"
+        storage_engine: "wiredTiger"
+        
+      flavor:
+        type: "replica" 
+        num: 3 
+        storage: "ULTRAHIGH" 
+        size: 500 
+        spec_code: "dds.mongodb.s6.xlarge.2.repset" 
+
