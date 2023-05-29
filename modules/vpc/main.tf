@@ -37,7 +37,7 @@ locals {
 }
 
 module "vpc" {
-  # source                 = "git::https://github.com/terraform-huaweicloud-modules/terraform-huaweicloud-vpc.git"
+  # source                   = "git::https://github.com/terraform-huaweicloud-modules/terraform-huaweicloud-vpc.git"
   source                   = "../../huaweicloud/terraform-huaweicloud-vpc"
   vpc_name                 = local.resource.vpc_name
   vpc_cidr_block           = local.resource.cidr_block
@@ -45,7 +45,7 @@ module "vpc" {
   is_security_group_create = false
 }
 
-/**
+  /**
   For the missing supported flags,
 
   - enable_nat_gateway = true

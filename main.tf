@@ -10,10 +10,10 @@ terraform {
   }
 
   backend "s3" {
-    bucket   = "terraform-bucket"
-    key      = "terraform.tfstate"
-    region   = "ap-southeast-3"
-    endpoint = "https://obs.ap-southeast-3.myhuaweicloud.com"
+    bucket                      = "terraform-bucket"
+    key                         = "terraform.tfstate"
+    region                      = "ap-southeast-3"
+    endpoint                    = "https://obs.ap-southeast-3.myhuaweicloud.com"
     skip_region_validation      = true
     skip_credentials_validation = true
     skip_metadata_api_check     = true
@@ -33,43 +33,43 @@ module "vpc" {
 }
 
 module "cce" {
-  source = "./modules/cce-cluster"
-  vpc_id = module.vpc.vpc_id
+  source            = "./modules/cce-cluster"
+  vpc_id            = module.vpc.vpc_id
   default_subnet_id = module.vpc.private_subnet_ids[0]
-  key_pair = "placeholder_text" # REMOVE THIS BEFORE DEPLOYMENT
+  key_pair          = "placeholder_text" # REMOVE THIS BEFORE DEPLOYMENT
   availability_zone = data.huaweicloud_availability_zones.this.names[0]
 }
 
-module "default_security_group" {
-  source = "./modules/security-groups"
+module "cce_node_pool" {
+  source = "./modules/cce-cluster/cce-node-pool"
+  cce_id = module.cce.id
+  availability_zone = data.huaweicloud_availability_zones.this.names[0]
 }
 
-# module "gaussdb" {
-#   source = "./modules/tidb"
-#   vpc_id = module.vpc.vpc_id
-#   subnet_id = module.vpc.database_subnet_ids[0]
-#   secgroup_id = module.default_security_group.id
-# }
+module "gaussdb" {
+  source    = "./modules/gaussdb"
+  vpc_id    = module.vpc.vpc_id
+  subnet_id = module.vpc.database_subnet_ids[0]
+}
 
-# module "subnet" {
-#   source = "./modules/subnet"
-#   vpc_id = module.vpc.vpc_id
-#   subnet_ids = module.vpc.subnet_ids
-# }
+module "redis" {
+  source = "./modules/redis/cluster"
+  vpc_id = module.vpc.vpc_id
+  # CHANGE THIS: SHOULD IT BE IN ALL PRIVATE SUBNETS
+  subnet_ids         = module.vpc.private_subnet_ids
+  availability_zones = data.huaweicloud_availability_zones.this.names
+}
 
-# module "redis" {
-#   source = "./modules/redis"
-#   vpc_id = module.vpc.vpc_id
-#   subnet_ids = module.vpc.subnet_ids
-#   availability_zones = data.huaweicloud_availability_zones.this.names
-# }
+module "redis-ecs" {
+  source            = "./modules/redis/ecs"
+  availability_zone = data.huaweicloud_availability_zones.this.names[0]
+  # WHICH SUBNET?
+  subnet_id = module.vpc.subnet_ids[0]
+}
 
-# module "security-groups" {
-#   source = "./modules/security-groups"
-  
-# }
-
-# module "node-pool-sg" {
-#   source = "./modules/node-pool-sg"
-# }
-
+module "dds" {
+  source = "./modules/dds"
+  vpc_id = module.vpc.vpc_id
+  subnet_id = module.vpc.database_subnet_ids[0]
+  availability_zone = data.huaweicloud_availability_zones.this.names[0]
+}

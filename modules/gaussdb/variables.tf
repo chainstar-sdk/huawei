@@ -5,7 +5,3 @@ variable "vpc_id" {
 variable "subnet_id" {
   description = "ID of subnet of Tidb"
 }
-
-variable "secgroup_id" {
-  description = "ID of Tidb's Security Group"
-}
