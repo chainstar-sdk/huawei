@@ -10,6 +10,11 @@ output "subnet_configs" {
   value = module.vpc.subnet_configs
 }
 
-# output flavors {
-#   value = module.gaussdb.flavors
-# }
+output flavors {
+  value = module.rds.flavors
+}
+
+output "availability_zones" {
+  value = data.huaweicloud_availability_zones.this.names
+}
+

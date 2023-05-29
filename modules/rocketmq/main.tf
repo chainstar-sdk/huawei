@@ -1,4 +1,8 @@
-## Rocketmq, with 2 ECS instances
+# ECS 自建 500G 硬盘
+
+module "security_group" {
+  source = "../security-groups/default"
+}
 
 # Flavor for rocketmq instances
 
@@ -38,10 +42,10 @@ resource "huaweicloud_compute_instance" "rocketmq_instance_1" {
   name               = "rocketmq_instance_1" #required
   image_id           = data.huaweicloud_images_image.rocketmq_image.id #required
   flavor_id          = data.huaweicloud_compute_flavors.rocketmq_flavor.ids[0] #required
-  security_group_ids = [var.secgroup_id]
+  security_group_ids = [module.security_group.id]
   availability_zone  = var.availability_zone
 
-  network { #required
+  network {
     uuid = var.subnet_id #required
   }
 }
@@ -50,7 +54,7 @@ resource "huaweicloud_compute_instance" "rocketmq_instance_2" {
   name               = "rocketmq_instance_2" #required
   image_id           = data.huaweicloud_images_image.rocketmq_image.id #required
   flavor_id          = data.huaweicloud_compute_flavors.rocketmq_flavor.ids[0] #required
-  security_group_ids = [var.secgroup_id]
+  security_group_ids = [module.security_group.id]
   availability_zone  = var.availability_zone
 
   network { #required

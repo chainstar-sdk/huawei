@@ -46,12 +46,12 @@ configs:
       eni_subnet: "10.10.8.0/24"
       gateway_ip: "10.10.8.1"
       node_pool:
-        name: "cce_node_pool"
+        name: "nodepool"
         os: "CentOS 8.2"
-        initial_node_count: 40
-        flavor_id: "s3.2xlarge.2"
+        initial_node_count: 10
+        flavor_id: "c7n.large.2"
         min_node_count: 3
-        max_node_count: 100
+        max_node_count: 20
         scall_enable: true
         scale_down_cooldown_time: 100
         priority: 1

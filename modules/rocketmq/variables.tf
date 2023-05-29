@@ -1,7 +1,3 @@
-variable "secgroup_id" {
-  description = "ID of the Security Group"
-}
-
 variable "availability_zone" {
   description = "AZ of rocketmq"
 }

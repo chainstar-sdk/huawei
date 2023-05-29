@@ -3,13 +3,6 @@ data "huaweicloud_dcs_flavors" "single_flavors" {
   capacity   = 4
 }
 
-resource "random_password" "password" {
-  length  = 25
-  min_numeric = 5
-  min_special = 5
-  min_upper = 5
-}
-
 resource "huaweicloud_dcs_instance" "this" {
   name               = "redis"
   engine             = "Redis"
@@ -17,7 +10,7 @@ resource "huaweicloud_dcs_instance" "this" {
   capacity           = data.huaweicloud_dcs_flavors.single_flavors.capacity
   flavor             = data.huaweicloud_dcs_flavors.single_flavors.flavors[0].name
   availability_zones = [var.availability_zones[0], var.availability_zones[1]]
-  password           = random_password.password.result
+  password           = "P@ssword1234!"
   vpc_id             = var.vpc_id
   subnet_id          = var.subnet_ids[0]
 
