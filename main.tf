@@ -32,6 +32,16 @@ module "vpc" {
   source = "./modules/vpc"
 }
 
+module "nat-public-gateway" {
+  source     = "./modules/nat-public-gateway"
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = concat(
+      module.vpc.public_subnet_ids,
+      module.vpc.private_subnet_ids,
+      module.vpc.database_subnet_ids,
+    )
+}
+
 module "rds" {
   source             = "./modules/rds"
   vpc_id             = module.vpc.vpc_id
@@ -90,14 +100,7 @@ module "rocketmq" {
   subnet_id         = module.vpc.private_subnet_ids[0]
 }
 
-module "nat-private-gateway" {
-  source    = "./modules/nat-private-gateway"
-  subnet_id = module.vpc.private_nat_subnet_id[0]
-}
-
-module "nat-public-gateway" {
-  source = "./modules/nat-public-gateway"
-    # Insert variables here
-  vpc_id    = module.vpc.vpc_id
-  subnet_id = module.vpc.public_nat_subnet_id[0]
-}
+# module "nat-private-gateway" {
+# source    = "./modules/nat-private-gateway"
+# subnet_id = module.vpc.private_nat_subnet_id[0]
+# }

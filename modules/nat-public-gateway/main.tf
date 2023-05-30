@@ -1,6 +1,7 @@
-resource "huaweicloud_nat_gateway" "nat_public_gateway" {
-  name        = "nat_public_gateway"
-  spec        = "3"
-  vpc_id      = var.vpc_id
-  subnet_id   = var.subnet_id
+resource "huaweicloud_nat_gateway" "this" {
+  for_each  = toset(var.subnet_ids)
+  name      = each.key
+  vpc_id    = var.vpc_id
+  spec      = 3
+  subnet_id = each.key
 }
