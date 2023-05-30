@@ -21,11 +21,6 @@ configs:
       database_subnets:
         database-az1: "10.10.100.0/24"
 
-      # Additional subnets for NAT gateways
-      nat_subway:
-        public-nat-default: "10.10.200.0/24"
-        private-nat-default: "10.10.201.0/24"
-
     cce_turbo_cluster:
       eni_subnet: "10.10.8.0/24"
       gateway_ip: "10.10.8.1"

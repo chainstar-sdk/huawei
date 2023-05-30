@@ -6,13 +6,18 @@ locals {
   resource = yamldecode(file("${path.cwd}/config.yaml")).configs.resources.cce_turbo_cluster.node_pool
 }
 
+resource "random_integer" "idx" {
+  min = 0
+  max = length(var.availability_zone) - 1
+}
+
 resource "huaweicloud_cce_node_pool" "node_pool" {
   cluster_id               = var.cce_id
   name                     = local.resource.name
   os                       = local.resource.os
   initial_node_count       = local.resource.initial_node_count
   flavor_id                = local.resource.flavor_id
-  availability_zone        = var.availability_zone
+  availability_zone        = var.availability_zone[random_integer.idx.result]
   min_node_count           = local.resource.min_node_count
   max_node_count           = local.resource.max_node_count
   password                 = "password123"

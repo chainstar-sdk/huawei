@@ -20,19 +20,11 @@ locals {
       cidr = v
     }
   ]
-  
-  nat_subway = [
-    for k, v in local.resource.nat_subway : {
-      name = k,
-      cidr = v
-    }
-  ]
 
   subnets_configuration = concat(
     local.private_subnets,
     local.public_subnets,
-    local.database_subnets,
-    local.nat_subway
+    local.database_subnets
   )
 }
 
