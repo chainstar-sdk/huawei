@@ -45,9 +45,9 @@ module "nat-public-gateway" {
 module "snat_rules" {
   source     = "./modules/NAT-gateway/snat"
   subnet_ids = concat(
-      module.vpc.public_subnet_ids,
-      module.vpc.private_subnet_ids,
-    )
+    module.vpc.public_subnet_ids,
+    module.vpc.private_subnet_ids,
+  )
   subnets_nat_gateway = module.nat-public-gateway.subnets_nat_gateway
 }
 
@@ -69,11 +69,11 @@ module "cce" {
   availability_zone = data.huaweicloud_availability_zones.this.names[0]
 }
 
-# module "cce_node_pool" {
-#   source            = "./modules/cce/cce-node-pool"
-#   cce_id            = module.cce.id
-#   availability_zone = data.huaweicloud_availability_zones.this.names
-# }
+module "cce_node_pool" {
+  source             = "./modules/cce/cce-node-pool"
+  cce_id             = module.cce.id
+  availability_zones = slice(data.huaweicloud_availability_zones.this.names, 0, 3)
+}
 
 module "gaussdb" {
   source    = "./modules/gaussdb"
@@ -104,9 +104,9 @@ module "dds" {
 }
 
 module "rocketmq" {
-  source            = "./modules/rocketmq"
-  availability_zone = data.huaweicloud_availability_zones.this.names[0]
-  subnet_id         = module.vpc.private_subnet_ids[0]
+  source             = "./modules/rocketmq"
+  availability_zones = slice(data.huaweicloud_availability_zones.this.names, 0, 3)
+  subnet_id          = module.vpc.private_subnet_ids[0]
 }
 
 # module "nat-private-gateway" {

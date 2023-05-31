@@ -1,5 +1,6 @@
-variable "availability_zone" {
-  description = "AZ of rocketmq"
+variable "availability_zones" {
+  description = "Availiability Zones"
+  type = list(string)
 }
 
 variable "subnet_id" {

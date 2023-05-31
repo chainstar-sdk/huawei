@@ -27,14 +27,13 @@ configs:
       node_pool:
         name: "nodepool"
         os: "CentOS 8.2"
-        initial_node_count: 10
-        flavor_id: "c7n.large.2"
-        min_node_count: 3
-        max_node_count: 20
-        scall_enable: true
-        scale_down_cooldown_time: 100
-        priority: 1
-        type: "vm"
+        # initial_node_count: 3
+        node_count: 10
+        flavor_lookup:
+          ap-southeast-3a: "c7n.xlarge.2"
+          ap-southeast-3b: "c7n.large.4"
+          ap-southeast-3c: "c7n.large.4"
+          ap-southeast-3d: "c7n.xlarge.2"
 
         root_volume:
           size: 100

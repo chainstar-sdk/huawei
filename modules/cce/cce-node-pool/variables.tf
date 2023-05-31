@@ -1,2 +1,2 @@
 variable "cce_id" {}
-variable "availability_zone" {}
+variable "availability_zones" {}

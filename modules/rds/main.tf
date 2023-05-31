@@ -45,12 +45,7 @@ resource "huaweicloud_rds_instance" "this" {
   # DB option group not implemented
   # Database Deletion Protection not implemented
 
-  tags = {
-    Owner       = "admin"
-    Environment = "prod"
-  }
-
-#   param_group_id = huaweicloud_rds_parametergroup.parameter_group.id
+  # param_group_id = huaweicloud_rds_parametergroup.parameter_group.id
 }
 
 # resource "huaweicloud_rds_parametergroup" "parameter_group" {

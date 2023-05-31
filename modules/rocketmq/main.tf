@@ -1,13 +1,22 @@
-# ECS 自建 500G 硬盘
+# ECS 自建 500G 硬盘, 六个节点
+
+locals {
+  node_count = 6
+}
 
 module "security_group" {
   source = "../security-groups/default"
 }
 
+resource "random_integer" "idx" {
+  min = 0
+  max = length(var.availability_zones) - 1
+}
+
 # Flavor for rocketmq instances
 
 data "huaweicloud_compute_flavors" "rocketmq_flavor" {
-  availability_zone = var.availability_zone
+  availability_zone = var.availability_zones[0]
   performance_type  = "normal"
   cpu_core_count    = 16
   memory_size       = 32
@@ -20,56 +29,22 @@ data "huaweicloud_images_image" "rocketmq_image" {
   most_recent = true
 }
 
-# Separate Volumes for rocketmq ECS instances
-
-resource "huaweicloud_evs_volume" "rocketmq_volume_1" {
-  name              = "rocketmq_volume_1"
-  availability_zone = var.availability_zone
-  volume_type       = "SAS"
-  size              = 500
-}
-
-resource "huaweicloud_evs_volume" "rocketmq_volume_2" {
-  name              = "rocketmq_volume_2"
-  availability_zone = var.availability_zone
-  volume_type       = "SAS"
-  size              = 500
-}
-
-# ECS's (called huaweicloud_compute_instance) of rocketmq
-
-resource "huaweicloud_compute_instance" "rocketmq_instance_1" {
-  name               = "rocketmq_instance_1" #required
-  image_id           = data.huaweicloud_images_image.rocketmq_image.id #required
-  flavor_id          = data.huaweicloud_compute_flavors.rocketmq_flavor.ids[0] #required
+resource "huaweicloud_compute_instance" "this" {
+  count              = local.node_count
+  name               = "rocketmq_instance_${count.index}"
+  image_id           = data.huaweicloud_images_image.rocketmq_image.id
+  flavor_id          = data.huaweicloud_compute_flavors.rocketmq_flavor.ids[0]
   security_group_ids = [module.security_group.id]
-  availability_zone  = var.availability_zone
+  availability_zone  = var.availability_zones[count.index % length(var.availability_zones)]
 
   network {
-    uuid = var.subnet_id #required
+    uuid = var.subnet_id
   }
-}
 
-resource "huaweicloud_compute_instance" "rocketmq_instance_2" {
-  name               = "rocketmq_instance_2" #required
-  image_id           = data.huaweicloud_images_image.rocketmq_image.id #required
-  flavor_id          = data.huaweicloud_compute_flavors.rocketmq_flavor.ids[0] #required
-  security_group_ids = [module.security_group.id]
-  availability_zone  = var.availability_zone
-
-  network { #required
-    uuid = var.subnet_id #required
+  data_disks {
+    type = "SAS"
+    size = "500"
   }
-}
 
-# Attach separate volumes to each ECS instance
-
-resource "huaweicloud_compute_volume_attach" "attached_1" {
-  instance_id = huaweicloud_compute_instance.rocketmq_instance_1.id
-  volume_id   = huaweicloud_evs_volume.rocketmq_volume_1.id
-}
-
-resource "huaweicloud_compute_volume_attach" "attached_2" {
-  instance_id = huaweicloud_compute_instance.rocketmq_instance_2.id
-  volume_id   = huaweicloud_evs_volume.rocketmq_volume_2.id
+  delete_disks_on_termination = true
 }
