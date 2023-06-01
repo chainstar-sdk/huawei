@@ -36,11 +36,6 @@ module "nat-public-gateway" {
   source     = "./modules/NAT-gateway/nat-public-gateway"
   vpc_id     = module.vpc.vpc_id
   subnet_id  = module.vpc.nat_subnet_ids[0]
-  # subnet_ids = concat(
-  #     module.vpc.public_subnet_ids,
-  #     module.vpc.private_subnet_ids,
-  #     module.vpc.database_subnet_ids,
-  #   )
   depends_on = [
     module.vpc
   ]
@@ -73,7 +68,7 @@ module "cce" {
   source            = "./modules/cce/cluster"
   vpc_id            = module.vpc.vpc_id
   default_subnet_id = module.vpc.private_subnet_ids[0]
-  key_pair          = "placeholder_text" # REMOVE THIS BEFORE DEPLOYMENT
+  key_pair          = "placeholder_text" # Add own SSH Key inside
   availability_zone = data.huaweicloud_availability_zones.this.names[0]
 }
 
@@ -89,6 +84,7 @@ module "gaussdb" {
   subnet_id = module.vpc.database_subnet_ids[0]
 }
 
+# Using DCS service to built a Redis cluster
 module "redis_cluster" {
   source = "./modules/redis/cluster"
   vpc_id = module.vpc.vpc_id
@@ -97,6 +93,7 @@ module "redis_cluster" {
   availability_zones = data.huaweicloud_availability_zones.this.names
 }
 
+# Self-Built Redis ECS instances
 module "redis_ecs" {
   source            = "./modules/redis/ecs"
   availability_zone = data.huaweicloud_availability_zones.this.names[0]
@@ -111,13 +108,9 @@ module "dds" {
   availability_zone = data.huaweicloud_availability_zones.this.names[0]
 }
 
+# Self-Built ECS for RocketMQ
 module "rocketmq" {
   source             = "./modules/rocketmq"
   availability_zones = slice(data.huaweicloud_availability_zones.this.names, 0, 3)
   subnet_id          = module.vpc.private_subnet_ids[0]
 }
-
-# module "nat-private-gateway" {
-# source    = "./modules/nat-private-gateway"
-# subnet_id = module.vpc.private_nat_subnet_id[0]
-# }
