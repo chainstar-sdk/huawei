@@ -20,6 +20,9 @@ configs:
       # Subnets for database clusters in each AZ
       database_subnets:
         database-az1: "10.10.100.0/24"
+      
+      nat_subnets:
+        nat-default: "10.10.15.0/24"
 
     cce_turbo_cluster:
       eni_subnet: "10.10.8.0/24"

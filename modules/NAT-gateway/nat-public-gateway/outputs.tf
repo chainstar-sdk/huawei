@@ -1,8 +1,7 @@
-output "subnets_nat_gateway" {
-  # key = subnet_id
-  # v = gateway_id
-  value = {
-    for k, v in huaweicloud_nat_gateway.this :
-    k => v.id
-  }
+output "nat_gateway_id" {
+  value = huaweicloud_nat_gateway.this.id
+}
+
+output "nat_eip_id" {
+  value = huaweicloud_vpc_eip.this.id
 }

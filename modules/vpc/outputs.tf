@@ -37,3 +37,7 @@ output "public_nat_subnet_id" {
 output "private_nat_subnet_id" {
   value = module.vpc.private_nat_subnet_id
 }
+
+output "nat_subnet_ids" {
+  value = module.vpc.nat_subnet_ids
+}

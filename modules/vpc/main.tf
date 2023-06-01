@@ -21,11 +21,19 @@ locals {
     }
   ]
 
+  nat_subnets = [
+    for k, v in local.resource.nat_subnets : {
+      name = k,
+      cidr = v
+    }
+  ]
+
   subnets_configuration = concat(
     local.private_subnets,
     local.public_subnets,
-    local.database_subnets
-  )
+    local.database_subnets,
+    local.nat_subnets
+  )  
 }
 
 module "vpc" {

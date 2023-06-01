@@ -53,6 +53,10 @@ output "database_subnet_ids" {
   value = [for subnet in huaweicloud_vpc_subnet.this : subnet.id if length(regexall("database.*", subnet.name)) > 0]
 }
 
+output "nat_subnet_ids" {
+  value = [for subnet in huaweicloud_vpc_subnet.this : subnet.id if length(regexall("nat-*", subnet.name)) > 0]
+}
+
 output "public_nat_subnet_id" {
   value = [for subnet in huaweicloud_vpc_subnet.this : subnet.id if length(regexall("public-nat-default", subnet.name)) > 0]
 }

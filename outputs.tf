@@ -18,6 +18,6 @@ output "availability_zones" {
   value = data.huaweicloud_availability_zones.this.names
 }
 
-output "subnets_nat_gateway" {
-  value = module.nat-public-gateway.subnets_nat_gateway
-}
+# output "subnets_nat_gateway" {
+#   value = module.nat-public-gateway.subnets_nat_gateway
+# }

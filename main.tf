@@ -35,11 +35,15 @@ module "vpc" {
 module "nat-public-gateway" {
   source     = "./modules/NAT-gateway/nat-public-gateway"
   vpc_id     = module.vpc.vpc_id
-  subnet_ids = concat(
-      module.vpc.public_subnet_ids,
-      module.vpc.private_subnet_ids,
-      module.vpc.database_subnet_ids,
-    )
+  subnet_id  = module.vpc.nat_subnet_ids[0]
+  # subnet_ids = concat(
+  #     module.vpc.public_subnet_ids,
+  #     module.vpc.private_subnet_ids,
+  #     module.vpc.database_subnet_ids,
+  #   )
+  depends_on = [
+    module.vpc
+  ]
 }
 
 module "snat_rules" {
@@ -48,7 +52,11 @@ module "snat_rules" {
     module.vpc.public_subnet_ids,
     module.vpc.private_subnet_ids,
   )
-  subnets_nat_gateway = module.nat-public-gateway.subnets_nat_gateway
+  nat_gateway_id = module.nat-public-gateway.nat_gateway_id
+  nat_eip_id     = module.nat-public-gateway.nat_eip_id
+  depends_on = [
+    module.nat-public-gateway
+  ]
 }
 
 module "rds" {
