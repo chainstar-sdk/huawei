@@ -1,7 +1,7 @@
 resource "huaweicloud_nat_gateway" "this" {
-  name      = "Public NAT gateway"
-  vpc_id    = "70ffecf5-ca9f-41dc-b1da-316a33ad9c62" #var.vpc_id
-  subnet_id = "7fcb88ff-765f-4f18-a9a7-335d807e8499" #var.subnet_id
+  name      = "Public-NAT-gateway"
+  vpc_id    = var.vpc_id
+  subnet_id = var.subnet_id
   spec      = "3"
 }
 
