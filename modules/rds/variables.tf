@@ -8,5 +8,4 @@ variable "subnet_id" {
 
 variable "availability_zones" {
   description = "Availability zones of RDS"
-  type = list(string)
 }

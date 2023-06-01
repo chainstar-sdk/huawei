@@ -49,7 +49,7 @@ module "snat_rules" {
   )
   nat_gateway_id = module.nat-public-gateway.nat_gateway_id
   nat_eip_id     = module.nat-public-gateway.nat_eip_id
-  depends_on = [
+  depends_on     = [
     module.nat-public-gateway
   ]
 }
@@ -57,18 +57,15 @@ module "snat_rules" {
 module "rds" {
   source             = "./modules/rds"
   vpc_id             = module.vpc.vpc_id
-  availability_zones = [
-    data.huaweicloud_availability_zones.this.names[0],
-    data.huaweicloud_availability_zones.this.names[2]
-  ]
-  subnet_id = module.vpc.database_subnet_ids[0]
+  availability_zones = data.huaweicloud_availability_zones.this.names
+  subnet_id          = module.vpc.database_subnet_ids[0]
 }
 
 module "cce" {
   source            = "./modules/cce/cluster"
   vpc_id            = module.vpc.vpc_id
   default_subnet_id = module.vpc.private_subnet_ids[0]
-  key_pair          = "placeholder_text" # Add own SSH Key inside
+  key_pair          = "placeholder_text" # Add own SSH Key
   availability_zone = data.huaweicloud_availability_zones.this.names[0]
 }
 
