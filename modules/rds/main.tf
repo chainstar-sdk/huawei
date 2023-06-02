@@ -6,7 +6,7 @@ module "security_group" {
 }
 
 locals {
-  number_of_instance = 2
+  number_of_instance = 1
   availability_zones = tolist(setsubtract(var.availability_zones, ["ap-southeast-3b"]))
 }
 
@@ -14,8 +14,8 @@ data "huaweicloud_rds_flavors" "this" {
   db_type           = "MySQL"
   db_version        = "8.0"
   instance_mode     = "single"
-  vcpus             = "2"
-  memory            = "4"
+  vcpus             = var.vcpus
+  memory            = var.memory
   group_type        = "general"
   availability_zone = var.availability_zones[0]
 
@@ -23,7 +23,7 @@ data "huaweicloud_rds_flavors" "this" {
 
 resource "huaweicloud_rds_instance" "this" {
   count               = local.number_of_instance
-  name                = "nb-prod-${count.index}"
+  name                = var.instance_name
   flavor              = data.huaweicloud_rds_flavors.this.flavors[0].name # required
   vpc_id              = var.vpc_id
   subnet_id           = var.subnet_id

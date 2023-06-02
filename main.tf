@@ -54,8 +54,21 @@ module "snat_rules" {
   ]
 }
 
-module "rds" {
+module "rds-nacos" {
   source             = "./modules/rds"
+  instance_name      = "nb-nacos"
+  vcpus              = "2"
+  memory             = "4"
+  vpc_id             = module.vpc.vpc_id
+  availability_zones = data.huaweicloud_availability_zones.this.names
+  subnet_id          = module.vpc.database_subnet_ids[0]
+}
+
+module "rds-xxl" {
+  source             = "./modules/rds"
+  instance_name      = "nb-xxl"
+  vcpus              = "2"
+  memory             = "4"
   vpc_id             = module.vpc.vpc_id
   availability_zones = data.huaweicloud_availability_zones.this.names
   subnet_id          = module.vpc.database_subnet_ids[0]

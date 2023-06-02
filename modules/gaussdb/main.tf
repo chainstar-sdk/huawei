@@ -18,7 +18,7 @@ locals {
 }
 
 resource "huaweicloud_gaussdb_mysql_instance" "this" {
-  name                     = "tidb"
+  name                     = "nb-prod-gauss"
   password                 = "Password!@#$%"
   flavor                   = local.flavors[0]
   vpc_id                   = var.vpc_id
