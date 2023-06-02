@@ -11,7 +11,7 @@ output "subnet_configs" {
 }
 
 output flavors {
-  value = module.rds.flavors
+  value = module.rds-nacos.flavors
 }
 
 output "availability_zones" {

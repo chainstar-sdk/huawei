@@ -8,5 +8,16 @@ variable "subnet_id" {
 
 variable "availability_zones" {
   description = "Availability zones of RDS"
-  type = list(string)
+}
+
+variable "vcpus" {
+  description = "Number of vcpus"
+}
+
+variable "memory" {
+  description = "Memory amount" 
+}
+
+variable "instance_name" {
+  description = "Name of the instance" 
 }
