@@ -1,11 +1,12 @@
 locals {
   resource = yamldecode(file("${path.cwd}/config.yaml")).configs.resources.cce_turbo_cluster
+  subnet  = local.resource.subnet
 }
 
 resource "huaweicloud_vpc_subnet" "this" {
-  name       = "subnet-eni"
-  cidr       = local.resource.eni_subnet
-  gateway_ip = local.resource.gateway_ip
+  name       = local.resource.subnet.name
+  cidr       = local.resource.subnet.cidr
+  gateway_ip = local.resource.subnet.gateway_ip
   vpc_id     = var.vpc_id
 }
 

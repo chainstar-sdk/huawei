@@ -4,33 +4,34 @@ configs:
     vpc:
       vpc_name: "NB-production"
       cidr_block: "10.10.0.0/16"
+      secondary_cidr_block: null
 
       # Subnets with private only access for server clusters in each AZ
       private_subnets:
-        # for CCE
-        private-az-1: "10.10.0.0/21" # 2,048
-
         # for ECS instances
-        private-az1-3: "10.10.10.0/24" # 256
+        private-subnet-1: "10.10.8.0/21" # 2,048
 
       # Subnets with public NAT gateway access for server clusters in each AZ
       public_subnets:
-        public-az1: "10.10.20.0/24" # 256
+        public-subnet-1: "10.10.20.0/24"
 
       # Subnets for database clusters in each AZ
       database_subnets:
-        database-az1: "10.10.100.0/24" # 256
+        database-subnet-1: "10.10.100.0/24"
       
       nat_subnets:
-        nat-default: "10.10.15.0/24" # 256
+        nat-default: "10.10.16.0/24" # 256
 
     cce_turbo_cluster:
-      eni_subnet: "10.10.8.0/14" # 262,144 (fits: (2048 + 256 + 256) * 100 = 256000)
-      gateway_ip: "10.10.8.1"
+      # Subnet for the Pods
+      subnet:
+        name: "eni-subnet-0"
+        cidr: 10.10.0.0/21
+        gateway_ip: "10.10.0.1"
+      
       node_pool:
         name: "nodepool"
         os: "CentOS 8.2"
-        # initial_node_count: 3
         node_count: 10
         flavor_lookup:
           ap-southeast-3a: "c7n.xlarge.2"

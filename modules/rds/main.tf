@@ -10,21 +10,16 @@ locals {
   availability_zones = tolist(setsubtract(var.availability_zones, ["ap-southeast-3b"]))
 }
 
-data "huaweicloud_rds_flavors" "this" {
-  db_type           = "MySQL"
-  db_version        = "8.0"
-  instance_mode     = "single"
-  vcpus             = var.vcpus
-  memory            = var.memory
-  group_type        = "general"
-  availability_zone = var.availability_zones[0]
-
+resource "random_password" "default" {
+  length           = 12
+  special          = true
+  override_special = "_%"
 }
 
 resource "huaweicloud_rds_instance" "this" {
   count               = local.number_of_instance
   name                = var.instance_name
-  flavor              = data.huaweicloud_rds_flavors.this.flavors[0].name # required
+  flavor              = data.huaweicloud_rds_flavors.this.flavors[0].name
   vpc_id              = var.vpc_id
   subnet_id           = var.subnet_id
   security_group_id   = module.security_group.id
@@ -33,7 +28,7 @@ resource "huaweicloud_rds_instance" "this" {
   db {
     type     = "MySQL"
     version  = "8.0"
-    password = "Huangwei!120521"
+    password = resource.random_password.default.result
   }
 
   volume {
@@ -42,7 +37,7 @@ resource "huaweicloud_rds_instance" "this" {
   }
 
   backup_strategy {
-    start_time = "03:00-04:00" # required; 03:00-6:00 is not valid, so 3:00-4:00
+    start_time = "03:00-04:00" # 03:00-6:00 is not valid
     keep_days  = 1
   }
   # iam_database_authentication_enabled not implemented
