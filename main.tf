@@ -90,3 +90,10 @@ module "rocketmq" {
   subnet_id          = module.vpc.private_subnet_ids[0]
   depends_on         = [module.vpc]
 }
+
+module "kafka" {
+  source = "./modules/kafka"
+  vpc_id = module.vpc.vpc_id
+  subnet_id = module.vpc.private_subnet_ids[0]
+  depends_on = [module.vpc]
+}

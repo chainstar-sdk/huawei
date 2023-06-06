@@ -65,3 +65,10 @@ configs:
         size: 500 
         spec_code: "dds.mongodb.s6.xlarge.2.repset" 
 
+    kafka:
+      access_user: "user"
+      password: "Kafkatest@123"
+      manager_user: "kafka-user"
+      manager_password: "Kafkatest@123"
+      advertised_ips: ["", "www.terraform-test.com", "192.168.0.53"]
+
