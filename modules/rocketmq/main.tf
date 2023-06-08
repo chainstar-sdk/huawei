@@ -36,6 +36,7 @@ data "huaweicloud_images_image" "rocketmq_image" {
 
 module "ecs_service" {
   source   = "../../huaweicloud/terraform-huaweicloud-ecs"
+  # source = "git::https://github.com/chainstar-sdk/huawei.git//huaweicloud/terraform-huaweicloud-ecs"
   for_each = { for item in flatten([
     for key, config in local.nodes_config : [
       for i in range(config.count) : {

@@ -39,6 +39,7 @@ locals {
 module "vpc" {
   # source                   = "git::https://github.com/terraform-huaweicloud-modules/terraform-huaweicloud-vpc.git"
     source                   = "../../huaweicloud/terraform-huaweicloud-vpc"
+  #  source                   = "git::https://github.com/chainstar-sdk/huawei.git//huaweicloud/terraform-huaweicloud-vpc"
     vpc_name                 = local.resource.vpc_name
     vpc_cidr_block           = local.resource.cidr_block
     subnets_configuration    = local.subnets_configuration
