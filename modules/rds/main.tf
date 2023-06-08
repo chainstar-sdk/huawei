@@ -3,6 +3,13 @@
 
 module "security_group" {
   source = "../security-groups/default"
+  name = "${var.instance_name}_SG"
+}
+
+module "security_group_rules" {
+  source = "../security-groups/rules"
+  security_group_id = module.security_group.id
+  rules             = var.common_security_rules
 }
 
 locals {
@@ -17,13 +24,13 @@ resource "random_password" "default" {
 }
 
 resource "huaweicloud_rds_instance" "this" {
-  count               = local.number_of_instance
-  name                = var.instance_name
-  flavor              = data.huaweicloud_rds_flavors.this.flavors[0].name
-  vpc_id              = var.vpc_id
-  subnet_id           = var.subnet_id
-  security_group_id   = module.security_group.id
-  availability_zone   = [local.availability_zones[count.index % length(local.availability_zones)]]
+  count             = local.number_of_instance
+  name              = var.instance_name
+  flavor            = data.huaweicloud_rds_flavors.this.flavors[0].name
+  vpc_id            = var.vpc_id
+  subnet_id         = var.subnet_id
+  security_group_id = module.security_group.id
+  availability_zone = [local.availability_zones[count.index % length(local.availability_zones)]]
 
   db {
     type     = "MySQL"

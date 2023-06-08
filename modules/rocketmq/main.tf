@@ -1,7 +1,14 @@
 # ECS 自建 500G 硬盘, 六个节点
 
 locals {
-  node_count = 6
+  nodes_config = {
+    "rocketmq_swap" = {
+      count = 3
+    }
+    "rocketmq_spot" = {
+      count = 3
+    }
+  }
 }
 
 module "security_group" {
@@ -14,7 +21,6 @@ resource "random_integer" "idx" {
 }
 
 # Flavor for rocketmq instances
-
 data "huaweicloud_compute_flavors" "rocketmq_flavor" {
   availability_zone = var.availability_zones[0]
   performance_type  = "normal"
@@ -23,28 +29,34 @@ data "huaweicloud_compute_flavors" "rocketmq_flavor" {
 }
 
 # Image for rocketmq instances
-
 data "huaweicloud_images_image" "rocketmq_image" {
   name        = "Ubuntu 18.04 server 64bit"
   most_recent = true
 }
 
-resource "huaweicloud_compute_instance" "this" {
-  count              = local.node_count
-  name               = "rocketmq_instance_${count.index}"
-  image_id           = data.huaweicloud_images_image.rocketmq_image.id
-  flavor_id          = data.huaweicloud_compute_flavors.rocketmq_flavor.ids[0]
+module "ecs_service" {
+  source   = "../../huaweicloud/terraform-huaweicloud-ecs"
+  for_each = { for item in flatten([
+    for key, config in local.nodes_config : [
+      for i in range(config.count) : {
+        name  = "${key}-${i}"
+        index = i
+      }
+    ]
+  ]) : item.name => { index = item.index } }
+
+  subnet_id          = var.subnet_id
   security_group_ids = [module.security_group.id]
-  availability_zone  = var.availability_zones[count.index % length(var.availability_zones)]
+  availability_zone  = var.availability_zones[each.value.index % length(var.availability_zones)]
 
-  network {
-    uuid = var.subnet_id
-  }
-
-  data_disks {
+  instance_name            = each.key
+  instance_flavor_id       = data.huaweicloud_compute_flavors.rocketmq_flavor.ids[0]
+  instance_image_id        = data.huaweicloud_images_image.rocketmq_image.id
+  system_disk_type         = "SSD"
+  system_disk_size         = 40
+  admin_password           = "Password1234"
+  data_disks_configuration = [{
     type = "SAS"
     size = "500"
-  }
-
-  delete_disks_on_termination = true
+  }]
 }

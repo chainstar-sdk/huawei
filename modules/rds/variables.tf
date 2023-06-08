@@ -21,3 +21,9 @@ variable "memory" {
 variable "instance_name" {
   description = "Name of the instance" 
 }
+
+variable "common_security_rules" {
+  type = list(map(string))
+  description = "List of rules in a security group"
+  default     = []
+}

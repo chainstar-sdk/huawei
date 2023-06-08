@@ -1,5 +1,5 @@
 resource "huaweicloud_networking_secgroup" "this" {
-  name                 = "default_secgroup"
-  description          = "Default security group"
+  name                 = "${var.name}"
+  description          = "${var.description}"
   delete_default_rules = false
 }

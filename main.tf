@@ -10,11 +10,11 @@ module "nat-public-gateway" {
 }
 
 module "snat_rules" {
-  source          = "./modules/NAT-gateway/snat"
-  subnet_ids      = concat(module.vpc.public_subnet_ids, module.vpc.private_subnet_ids)
-  nat_gateway_id  = module.nat-public-gateway.nat_gateway_id
-  nat_eip_id      = module.nat-public-gateway.nat_eip_id
-  depends_on      = [module.nat-public-gateway]
+  source         = "./modules/NAT-gateway/snat"
+  subnet_ids     = concat(module.vpc.public_subnet_ids, module.vpc.private_subnet_ids)
+  nat_gateway_id = module.nat-public-gateway.nat_gateway_id
+  nat_eip_id     = module.nat-public-gateway.nat_eip_id
+  depends_on     = [module.nat-public-gateway]
 }
 
 module "rds" {
@@ -28,6 +28,14 @@ module "rds" {
       memory = "4"
     }
   }
+  common_security_rules = [{
+    direction      = "ingress",
+    ethertype      = "IPv4",
+    protocol       = "tcp",
+    port_range_min = "3306",
+    port_range_max = "3306",
+    remote_ip_cidr = "10.10.0.0/21"
+  }]
   source             = "./modules/rds"
   instance_name      = each.key
   vcpus              = each.value.vcpus
@@ -45,6 +53,14 @@ module "cce" {
   key_pair          = "placeholder_text" # Add own SSH Key
   availability_zone = data.huaweicloud_availability_zones.this.names[0]
   depends_on        = [module.vpc]
+}
+
+module "cce_snat_rules" {
+  source         = "./modules/NAT-gateway/snat"
+  subnet_ids     = [module.cce.eni_subnet_id]
+  nat_gateway_id = module.nat-public-gateway.nat_gateway_id
+  nat_eip_id     = module.nat-public-gateway.nat_eip_id
+  depends_on     = [module.nat-public-gateway, module.cce]
 }
 
 module "cce_node_pool" {
@@ -77,11 +93,11 @@ module "redis_ecs" {
 }
 
 module "dds" {
-  source             = "./modules/dds"
-  vpc_id             = module.vpc.vpc_id
-  subnet_id          = module.vpc.database_subnet_ids[0]
+  source            = "./modules/dds"
+  vpc_id            = module.vpc.vpc_id
+  subnet_id         = module.vpc.database_subnet_ids[0]
   availability_zone = data.huaweicloud_availability_zones.this.names[0]
-  depends_on         = [module.vpc]
+  depends_on        = [module.vpc]
 }
 
 module "rocketmq" {
@@ -92,8 +108,8 @@ module "rocketmq" {
 }
 
 module "kafka" {
-  source = "./modules/kafka"
-  vpc_id = module.vpc.vpc_id
-  subnet_id = module.vpc.private_subnet_ids[0]
+  source     = "./modules/kafka"
+  vpc_id     = module.vpc.vpc_id
+  subnet_id  = module.vpc.private_subnet_ids[0]
   depends_on = [module.vpc]
 }
