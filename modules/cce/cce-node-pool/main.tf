@@ -12,17 +12,16 @@ resource "huaweicloud_kps_keypair" "mykp" {
 }
 
 resource "huaweicloud_cce_node_pool" "node_pool" {
-  count             = local.resource.node_count
   cluster_id        = var.cce_id
-  name              = "${local.resource.name}-${count.index}"
+  name              = local.resource.name
   os                = local.resource.os
-  flavor_id         = local.resource.flavor_lookup[var.availability_zones[count.index % length(var.availability_zones)]]
-  availability_zone = var.availability_zones[count.index % length(var.availability_zones)]
+  flavor_id         = local.resource.flavor_id #flavor_lookup[var.availability_zones[count.index % length(var.availability_zones)]]
+  # availability_zone = var.availability_zones[count.index % length(var.availability_zones)]
   key_pair          = huaweicloud_kps_keypair.mykp.name
-  initial_node_count       = 1
+  initial_node_count       = local.resource.node_count
   scall_enable             = true
-  min_node_count           = 1
-  max_node_count           = 10
+  min_node_count           = local.resource.min_node_count
+  max_node_count           = local.resource.max_node_count
   scale_down_cooldown_time = 100
   priority                 = 1
   type                     = "vm"
