@@ -31,7 +31,7 @@ configs:
       
       node_pool:
         name: "nodepool"
-        os: "CentOS 8.2"
+        os: "CentOS 7.6"
         node_count: 10
         flavor_lookup:
           ap-southeast-3a: "c7n.xlarge.2"
