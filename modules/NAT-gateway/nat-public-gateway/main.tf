@@ -7,7 +7,7 @@ resource "huaweicloud_nat_gateway" "this" {
 
 resource "huaweicloud_vpc_bandwidth" "this" {
   name = "snat_eip"
-  size = 5
+  size = 200
 }
 
 resource "huaweicloud_vpc_eip" "this" {
