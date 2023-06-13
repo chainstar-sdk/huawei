@@ -1,0 +1,59 @@
+---
+security_group_rules:
+  sg_kubectl:
+  - direction: ingress
+    ethertype: IPv4
+    protocol: tcp
+    ports: "22"
+    remote_ip_cidr: "54.250.54.220/32"
+    priority: 1
+
+  - direction: ingress
+    ethertype: IPv4
+    protocol: tcp
+    ports: "22"
+    remote_ip_cidr: "13.114.92.253/32"
+    priority: 1
+
+  - direction: ingress
+    ethertype: IPv4
+    protocol: tcp
+    ports: "22"
+    remote_ip_cidr: "128.106.219.136/32"
+    priority: 1
+
+  - direction: ingress
+    ethertype: IPv4
+    protocol: icmp
+    remote_ip_cidr: "0.0.0.0/0"
+    priority: 1
+
+  - direction: ingress
+    ethertype: IPv4
+    protocol: tcp
+    ports: "8080"
+    remote_ip_cidr: "128.106.219.136/32"
+    priority: 10
+
+  - direction: ingress
+    ethertype: IPv4
+    protocol: tcp
+    ports: "8848"
+    remote_ip_cidr: "128.106.219.136/32"
+    priority: 20
+
+  - direction: ingress
+    ethertype: IPv4
+    protocol: tcp
+    ports: "443"
+    # port_range_min: "443"
+    # port_range_max: "443"
+    remote_ip_cidr: "0.0.0.0/0"
+    priority: 20
+    
+  - direction: ingress
+    ethertype: IPv4
+    protocol: tcp
+    ports: "80"
+    remote_ip_cidr: "0.0.0.0/0"
+    priority: 20

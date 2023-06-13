@@ -3,7 +3,8 @@ configs:
   resources:
     vpc:
       vpc_name: "NB-production"
-      cidr_block: "10.10.0.0/16"
+      cidr_block: "10.10.0.0/16" #65,536
+
       secondary_cidr_block: null
 
       # Subnets with private only access for server clusters in each AZ
@@ -17,7 +18,7 @@ configs:
 
       # Subnets for database clusters in each AZ
       database_subnets:
-        database-subnet-1: "10.10.100.0/24"
+        database-subnet-1: "10.10.100.0/24" # 256
       
       nat_subnets:
         nat-default: "10.10.16.0/24" # 256
@@ -26,7 +27,7 @@ configs:
       # Subnet for the Pods
       subnet:
         name: "eni-subnet-0"
-        cidr: 10.10.0.0/21
+        cidr: 10.10.0.0/21 #2,048
         gateway_ip: "10.10.0.1"
       
       node_pool:

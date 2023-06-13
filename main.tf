@@ -1,3 +1,7 @@
+locals {
+  security_group_rules = yamldecode(file("${path.cwd}/security_group_configs.yaml")).security_group_rules
+}
+
 module "vpc" {
   source = "./modules/vpc"
 }
@@ -15,6 +19,13 @@ module "snat_rules" {
   nat_gateway_id = module.nat-public-gateway.nat_gateway_id
   nat_eip_id     = module.nat-public-gateway.nat_eip_id
   depends_on     = [module.nat-public-gateway]
+}
+
+module "sg-kubectl" {
+  source              = "./modules/security-groups"
+  security_group_name = "sg-kubectl-2"
+  description         = "security group for kubectl to provision cluster"
+  rules               = local.security_group_rules.sg_kubectl
 }
 
 module "rds" {
@@ -86,10 +97,11 @@ module "redis_cluster" {
 }
 
 module "redis_ecs" {
-  source            = "./modules/redis/ecs"
-  availability_zone = data.huaweicloud_availability_zones.this.names[0]
-  subnet_id         = module.vpc.private_subnet_ids[0]
-  depends_on        = [module.vpc]
+  source             = "./modules/redis/ecs"
+  availability_zones = data.huaweicloud_availability_zones.this.names
+  subnet_id          = module.vpc.private_subnet_ids[0]
+  depends_on         = [module.vpc]
+  remote_group_id    = module.sg-kubectl.id
 }
 
 module "dds" {
