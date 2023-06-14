@@ -1,6 +1,7 @@
 ## That Redis which uses self-built ECS
 module "security_group" {
   source = "../../security-groups/default"
+  name = "sg-redis"
 }
 
 module "security_group_rules" {
@@ -17,10 +18,7 @@ module "security_group_rules" {
 
 locals {
   nodes_config = {
-    "redis_swap" = {
-      count = 1
-    }
-    "redis_spot" = {
+    "redis_high_precision" = {
       count = 1
     }
   }

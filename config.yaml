@@ -24,6 +24,7 @@ configs:
         nat-default: "10.10.16.0/24" # 256
 
     cce_turbo_cluster:
+      keypair: "mykp"
       # Subnet for the Pods
       subnet:
         name: "eni-subnet-0"
@@ -31,25 +32,59 @@ configs:
         gateway_ip: "10.10.0.1"
       
       node_pool:
-        name: "nodepool"
-        os: "CentOS 7.6"
-        node_count: 10
-        min_node_count: 10
-        max_node_count: 50
-        flavor_id: "c7n.xlarge.4"
-        flavor_lookup:
-          ap-southeast-3a: "c7n.xlarge.2"
-          ap-southeast-3b: "c7n.large.4"
-          ap-southeast-3c: "c7n.large.4"
-          ap-southeast-3d: "c7n.xlarge.2"
+      # flavor_lookup:
+        #   ap-southeast-3a: "c7n.xlarge.2"
+        #   ap-southeast-3b: "c7n.large.4"
+        #   ap-southeast-3c: "c7n.large.4"
+        #   ap-southeast-3d: "c7n.xlarge.2"
+        - name: "nodepool"
+          os: "CentOS 7.6"
+          node_count: 10
+          min_node_count: 10
+          max_node_count: 70
+          flavor_id: "c7n.xlarge.4"
+          taints: []
+          root_volume:
+            size: 100
+            volume_type: "SAS"
 
-        root_volume:
-          size: 100
-          volume_type: "SAS"
+          data_volume:
+            size: 100
+            volume_type: "SAS"
 
-        data_volume:
-          size: 100
-          volume_type: "SAS"
+        - name: "perp-matching"
+          os: "CentOS 7.6"
+          node_count: 1
+          min_node_count: 1
+          max_node_count: 20
+          flavor_id: "c7n.8xlarge.2"
+          taints:
+          - key: app
+            value: perp-matching
+            effect: NoSchedule
+          root_volume:
+            size: 100
+            volume_type: "SAS"
+          data_volume:
+            size: 100
+            volume_type: "SAS"
+
+        - name: "spot-matching"
+          os: "CentOS 7.6"
+          node_count: 1
+          min_node_count: 1
+          max_node_count: 20
+          flavor_id: "c7n.8xlarge.2"
+          taints:
+          - key: app
+            value: match-matching
+            effect: NoSchedule
+          root_volume:
+            size: 100
+            volume_type: "SAS"
+          data_volume:
+            size: 100
+            volume_type: "SAS"
     
     gaussdb:
       master_availability_zone: "ap-southeast-3a"
@@ -67,7 +102,23 @@ configs:
         num: 3 
         storage: "ULTRAHIGH" 
         size: 500 
-        spec_code: "dds.mongodb.s6.xlarge.2.repset" 
+        spec_code: "dds.mongodb.s6.xlarge.2.repset"
+
+    dcs:
+      - name: redis
+        whitelists:
+          - group_name: "Pods"
+            ip_address: ["10.10.0.0/21"]
+
+      - name: redis_swap
+        whitelists:
+        - group_name: "Pods"
+          ip_address: ["10.10.0.0/21"]
+
+      - name: redis_spot
+        whitelists:
+          - group_name: "Pods"
+            ip_address: ["10.10.0.0/21"]
 
     kafka:
       access_user: "user"

@@ -12,7 +12,7 @@ resource "huaweicloud_vpc_subnet" "this" {
 
 resource "huaweicloud_cce_cluster" "this" {
   name                   = "cluster"
-  flavor_id              = "cce.s1.small"
+  flavor_id              = "cce.s1.medium"
   vpc_id                 = var.vpc_id
   subnet_id              = var.default_subnet_id
   container_network_type = "eni"

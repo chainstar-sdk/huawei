@@ -4,13 +4,12 @@ data "huaweicloud_dcs_flavors" "single_flavors" {
 }
 
 resource "huaweicloud_dcs_instance" "this" {
-  name               = "redis"
+  name               = var.name
   engine             = "Redis"
   engine_version     = "5.0"
   capacity           = data.huaweicloud_dcs_flavors.single_flavors.capacity
   flavor             = data.huaweicloud_dcs_flavors.single_flavors.flavors[0].name
   availability_zones = [var.availability_zones[0], var.availability_zones[1]]
-  password           = "P@ssword1234!"
   vpc_id             = var.vpc_id
   subnet_id          = var.subnet_ids[0]
 
@@ -23,12 +22,11 @@ resource "huaweicloud_dcs_instance" "this" {
     begin_at    = "02:00-04:00"
   }
 
-  whitelists {
-    group_name = "test-group1"
-    ip_address = ["192.168.10.100", "192.168.0.0/24"]
-  }
-  whitelists {
-    group_name = "test-group2"
-    ip_address = ["172.16.10.100", "172.16.0.0/24"]
+  dynamic "whitelists" {
+    for_each = var.whitelists
+    content {
+      group_name = whitelists.value["group_name"]
+      ip_address = whitelists.value["ip_address"]
+    }
   }
 }
