@@ -5,6 +5,7 @@ security_group_rules:
     ethertype: IPv4
     protocol: tcp
     ports: "22"
+    description: "Used to remotely connect to Linux ECSs"
     remote_ip_cidr: "54.250.54.220/32"
     priority: 1
 
@@ -12,6 +13,7 @@ security_group_rules:
     ethertype: IPv4
     protocol: tcp
     ports: "22"
+    description: "Used to remotely connect to Linux ECSs"
     remote_ip_cidr: "13.114.92.253/32"
     priority: 1
 
@@ -19,12 +21,14 @@ security_group_rules:
     ethertype: IPv4
     protocol: tcp
     ports: "22"
+    description: "Used to remotely connect to Linux ECSs"
     remote_ip_cidr: "128.106.219.136/32"
     priority: 1
 
   - direction: ingress
     ethertype: IPv4
     protocol: icmp
+    description: "Used to test the ECS connectivity with the ping command"
     remote_ip_cidr: "0.0.0.0/0"
     priority: 1
 

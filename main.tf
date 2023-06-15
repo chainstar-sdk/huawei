@@ -3,6 +3,17 @@ locals {
   dcs_resources        = yamldecode(file("${path.cwd}/config.yaml")).configs.resources.dcs
   nodepool_resources   = yamldecode(file("${path.cwd}/config.yaml")).configs.resources.cce_turbo_cluster.node_pool
   nodepool_keypair     = yamldecode(file("${path.cwd}/config.yaml")).configs.resources.cce_turbo_cluster.keypair
+  redis_ecs_resources  = {
+    redis_high_precision = {
+      system_disk_size         = 400,
+      system_disk_type         = "SSD",
+      data_disks_configuration = [{
+        type = "SAS"
+        size = "100"
+      }],
+      count = 1
+    }
+  }
 }
 
 module "vpc" {
@@ -26,7 +37,7 @@ module "snat_rules" {
 
 module "sg-kubectl" {
   source              = "./modules/security-groups"
-  security_group_name = "sg-kubectl-2"
+  security_group_name = "sg-kubectl"
   description         = "security group for kubectl to provision cluster"
   rules               = local.security_group_rules.sg_kubectl
 }
@@ -96,6 +107,7 @@ module "cce_node_pool" {
   max_node_count     = each.value.max_node_count
   flavor_id          = each.value.flavor_id
   taints             = each.value.taints
+  labels             = each.value.labels
   root_volume        = each.value.root_volume
   data_volume        = each.value.data_volume
   depends_on         = [module.cce, module.cce_node_pool_sg]
@@ -119,13 +131,46 @@ module "redis_cluster" {
   depends_on         = [module.vpc]
 }
 
-module "redis_ecs" {
-  source             = "./modules/redis/ecs"
-  availability_zones = data.huaweicloud_availability_zones.this.names
-  subnet_id          = module.vpc.private_subnet_ids[0]
-  depends_on         = [module.vpc]
-  remote_group_id    = module.sg-kubectl.id
+# --- Module for self built Redis ECS instances --- #
+module "redis_high_precision_sg" {
+  source              = "./modules/security-groups"
+  security_group_name = "sg-redis"
+  rules               = [{
+    "direction"      : "ingress",
+    "ethertype"      : "IPv4",
+    "protocol"       : "tcp",
+    "ports"          : "22",
+    "remote_group_id": module.sg-kubectl.id
+  },
+  {
+    "direction"     : "ingress",
+    "ethertype"     : "IPv4",
+    "protocol"      : "tcp",
+    "ports"         : "6379",
+    "remote_ip_cidr": "10.10.0.0/21"
+  }]
 }
+
+module "redis_ecs" {
+  for_each = {
+    for item in flatten([
+      for k, v in local.redis_ecs_resources : [
+        for i in range(v.count): merge({name = "${k}-${i}", index = i}, v)
+      ]
+    ]) : item.name => item
+  }
+
+  source                   = "./modules/redis/ecs"
+  name                     = each.key
+  availability_zone        = data.huaweicloud_availability_zones.this.names[each.value.index % length(data.huaweicloud_availability_zones.this)]
+  subnet_id                = module.vpc.private_subnet_ids[0]
+  security_group_id        = [module.redis_high_precision_sg.id]
+  system_disk_size         = each.value.system_disk_size
+  system_disk_type         = each.value.system_disk_type
+  data_disks_configuration = each.value.data_disks_configuration
+  depends_on               = [module.vpc]
+}
+# ------------------------------------ #
 
 module "dds" {
   source            = "./modules/dds"

@@ -41,6 +41,10 @@ variable "taints" {
     }))
 }
 
+variable "labels" {
+    type = map
+}
+
 variable "root_volume" {
     type = object({
       size = number

@@ -1,7 +1,7 @@
 module "security_group" {
-  source      = "./default"
-  name        = var.security_group_name
-  description = var.description
+  source               = "./default"
+  name                 = var.security_group_name
+  description          = var.description
 }
 
 module "security_group_rules" {

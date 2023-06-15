@@ -1,39 +1,8 @@
 ## That Redis which uses self-built ECS
-module "security_group" {
-  source = "../../security-groups/default"
-  name = "sg-redis"
-}
-
-module "security_group_rules" {
-  source          = "../../security-groups/rules"
-  security_group_id = module.security_group.id
-  rules = [{
-    "direction": "ingress",
-    "ethertype": "IPv4",
-    "protocol": "tcp",
-    "ports": "22",
-    "remote_group_id": var.remote_group_id
-  },
-  {
-    "direction": "ingress",
-    "ethertype": "IPv4",
-    "protocol": "tcp",
-    "ports": "6379",
-    "remote_ip_cidr": "10.10.0.0/21"
-  }]
-}
-
-locals {
-  nodes_config = {
-    "redis_high_precision" = {
-      count = 1
-    }
-  }
-}
 
 # Used 8vcpu 32gb-mem as 4vcpu 32gb-mem not applicable
 data "huaweicloud_compute_flavors" "redis_flavor" {
-  availability_zone = var.availability_zones[0]
+  availability_zone = var.availability_zone
   performance_type  = "normal"
   cpu_core_count    = 8
   memory_size       = 32
@@ -46,29 +15,15 @@ data "huaweicloud_images_image" "redis_image" {
 }
 
 module "ecs_service" {
-    source   = "../../../huaweicloud/terraform-huaweicloud-ecs"
-  # source   = "git::https://github.com/chainstar-sdk/huawei.git//huaweicloud/terraform-huaweicloud-ecs"
-    for_each = { for item in flatten([
-    for key, config in local.nodes_config : [
-      for i in range(config.count) : {
-        name  = "${key}-${i}"
-        index = i
-      }
-    ]
-  ]) : item.name => { index = item.index } }
-
-  subnet_id          = var.subnet_id
-  security_group_ids = [module.security_group.id]
-  availability_zone  = var.availability_zones[each.value.index % length(var.availability_zones)]
-
-  instance_name            = each.key
+  source                   = "../../../huaweicloud/terraform-huaweicloud-ecs"
+  subnet_id                = var.subnet_id
+  security_group_ids       = var.security_group_id
+  availability_zone        = var.availability_zone
+  instance_name            = var.name
   instance_flavor_id       = data.huaweicloud_compute_flavors.redis_flavor.ids[0]
   instance_image_id        = data.huaweicloud_images_image.redis_image.id
-  system_disk_type         = "SSD"
-  system_disk_size         = 40
+  system_disk_type         = var.system_disk_type
+  system_disk_size         = var.system_disk_size
   admin_password           = "Password1234"
-  data_disks_configuration = [{
-    type = "SAS"
-    size = "100"
-  }]
+  data_disks_configuration = var.data_disks_configuration
 }
