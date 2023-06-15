@@ -9,10 +9,17 @@ module "security_group_rules" {
   security_group_id = module.security_group.id
   rules = [{
     "direction": "ingress",
-    "ethertype": "ipv4",
+    "ethertype": "IPv4",
     "protocol": "tcp",
     "ports": "22",
     "remote_group_id": var.remote_group_id
+  },
+  {
+    "direction": "ingress",
+    "ethertype": "IPv4",
+    "protocol": "tcp",
+    "ports": "6379",
+    "remote_ip_cidr": "10.10.0.0/21"
   }]
 }
 
